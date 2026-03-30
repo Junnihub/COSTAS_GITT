@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# Generated map output (run generar_mapa.py to regenerate)
+output/
+
+# OS
+.DS_Store
+Thumbs.db
