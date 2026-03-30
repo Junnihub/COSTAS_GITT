@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COSTAS_GITT – Peligros Costeros de Puerto Colombia</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a1628;
+      color: #e0e6f0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #2a5298;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-logo {
+      font-size: 2rem;
+    }
+
+    .header-title h1 {
+      font-size: 1.2rem;
+      color: #4fc3f7;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .header-title p {
+      font-size: 0.75rem;
+      color: #90b4ce;
+    }
+
+    .header-badge {
+      background: rgba(79, 195, 247, 0.15);
+      border: 1px solid #4fc3f7;
+      border-radius: 1rem;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.72rem;
+      color: #4fc3f7;
+      white-space: nowrap;
+    }
+
+    /* ── Main layout ── */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 300px;
+      min-width: 260px;
+      background: #0d2137;
+      border-right: 1px solid #1e3a5c;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-section {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #1e3a5c;
+    }
+
+    .sidebar-section h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4fc3f7;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Layer toggles */
+    .layer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .layer-item:hover {
+      opacity: 0.85;
+    }
+
+    .layer-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+    }
+
+    .layer-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #1e3a5c;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle-slider:before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: #2a5298;
+    }
+
+    .toggle input:checked + .toggle-slider:before {
+      transform: translateX(16px);
+    }
+
+    /* Legend */
+    .legend-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.78rem;
+    }
+
+    .legend-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .legend-text strong {
+      display: block;
+      font-size: 0.8rem;
+    }
+
+    .legend-text span {
+      color: #90b4ce;
+      font-size: 0.72rem;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .stat-card {
+      background: #112233;
+      border-radius: 6px;
+      padding: 0.6rem;
+      text-align: center;
+      border: 1px solid #1e3a5c;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #4fc3f7;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: #90b4ce;
+      margin-top: 0.2rem;
+      line-height: 1.2;
+    }
+
+    /* Info panel (scrollable) */
+    .info-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.9rem 1rem;
+    }
+
+    .info-panel::-webkit-scrollbar { width: 5px; }
+    .info-panel::-webkit-scrollbar-track { background: #0d2137; }
+    .info-panel::-webkit-scrollbar-thumb { background: #2a5298; border-radius: 3px; }
+
+    .info-placeholder {
+      color: #4a6b8a;
+      font-size: 0.82rem;
+      text-align: center;
+      padding: 2rem 0;
+      line-height: 1.6;
+    }
+
+    .feature-info h4 {
+      font-size: 0.95rem;
+      color: #4fc3f7;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-info .nivel-badge {
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .nivel-alto    { background: rgba(215,48,39,0.25);  color: #ef9a9a; border: 1px solid #d73027; }
+    .nivel-critico { background: rgba(123,45,139,0.25); color: #ce93d8; border: 1px solid #7b2d8b; }
+    .nivel-medio   { background: rgba(252,141,89,0.25); color: #ffcc80; border: 1px solid #fc8d59; }
+    .nivel-monitor { background: rgba(33,113,181,0.25); color: #90caf9; border: 1px solid #2171b5; }
+    .nivel-info    { background: rgba(26,150,65,0.25);  color: #a5d6a7; border: 1px solid #1a9641; }
+    .nivel-patrim  { background: rgba(123,45,139,0.25); color: #ce93d8; border: 1px solid #7b2d8b; }
+
+    .feature-info p {
+      font-size: 0.8rem;
+      color: #b0c4d8;
+      line-height: 1.55;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-info .source {
+      font-size: 0.7rem;
+      color: #4a6b8a;
+      font-style: italic;
+      border-top: 1px solid #1e3a5c;
+      padding-top: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    /* ── Map container ── */
+    #map {
+      flex: 1;
+      background: #0a1628;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #0d2137;
+      border-top: 1px solid #1e3a5c;
+      padding: 0.4rem 1.5rem;
+      font-size: 0.7rem;
+      color: #4a6b8a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    footer a {
+      color: #4fc3f7;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Leaflet popup customization */
+    .leaflet-popup-content-wrapper {
+      background: #0d2137;
+      color: #e0e6f0;
+      border: 1px solid #2a5298;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .leaflet-popup-tip {
+      background: #0d2137;
+    }
+
+    .leaflet-popup-content {
+      margin: 12px 14px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .popup-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #4fc3f7;
+      margin-bottom: 0.3rem;
+    }
+
+    .popup-nivel {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.1rem 0.5rem;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+    .popup-desc {
+      font-size: 0.78rem;
+      color: #b0c4d8;
+      line-height: 1.5;
+      margin-bottom: 0.4rem;
+    }
+
+    .popup-source {
+      font-size: 0.68rem;
+      color: #4a6b8a;
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-left">
+    <span class="header-logo">🌊</span>
+    <div class="header-title">
+      <h1>COSTAS_GITT – Puerto Colombia</h1>
+      <p>Mapa Interactivo de Peligros Costeros · Mar Caribe, Colombia</p>
+    </div>
+  </div>
+  <span class="header-badge">
+    <i class="fa-solid fa-satellite"></i>&nbsp; Basado en CoastSat · Extensión Académica
+  </span>
+</header>
+
+<!-- ── MAIN ── -->
+<div class="main-container">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+
+    <!-- Layer controls -->
+    <div class="sidebar-section">
+      <h3><i class="fa-solid fa-layer-group"></i> Capas</h3>
+
+      <div class="layer-item" onclick="toggleLayer('erosionAlta')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#d73027;"></span>
+          Erosión Alta
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-erosionAlta" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('erosionMedia')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#fc8d59;"></span>
+          Erosión Moderada
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-erosionMedia" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('inundacionAlta')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#fee090; border-color:#aaa;"></span>
+          Inundación Alta
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-inundacionAlta" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('inundacionMedia')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#ffffbf; border-color:#aaa;"></span>
+          Inundación Media
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-inundacionMedia" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('lineaCostera')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#2171b5;"></span>
+          Línea Costera
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-lineaCostera" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('contaminacion')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#4d9221;"></span>
+          Contaminación
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-contaminacion" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('acrecion')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#1a9641;"></span>
+          Acreción Costera
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-acrecion" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('infraestructura')">
+        <div class="layer-label">
+          <span class="layer-swatch" style="background:#7b2d8b;"></span>
+          Infraestructura
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-infraestructura" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="sidebar-section">
+      <h3><i class="fa-solid fa-chart-bar"></i> Estadísticas</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">~1.8</div>
+          <div class="stat-label">km monitoreo costero</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1–3</div>
+          <div class="stat-label">m/año retroceso máx.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1984</div>
+          <div class="stat-label">inicio series Landsat</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">40+</div>
+          <div class="stat-label">años de datos sat.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="sidebar-section">
+      <h3><i class="fa-solid fa-map-legend" style="font-size:0.7rem"></i><i class="fa-solid fa-info-circle"></i> Leyenda</h3>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#d73027;"></span>
+        <div class="legend-text">
+          <strong>Erosión Alta</strong>
+          <span>Retroceso &gt; 1 m/año</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#fc8d59;"></span>
+        <div class="legend-text">
+          <strong>Erosión Moderada</strong>
+          <span>Retroceso 0.3–1 m/año</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#fee090;"></span>
+        <div class="legend-text">
+          <strong>Inundación Alta</strong>
+          <span>Marejadas extremas</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#ffffbf; border-color:#aaa;"></span>
+        <div class="legend-text">
+          <strong>Inundación Media</strong>
+          <span>Oleaje moderado</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#7b2d8b;"></span>
+        <div class="legend-text">
+          <strong>Infraestructura</strong>
+          <span>Muelle histórico</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#4d9221;"></span>
+        <div class="legend-text">
+          <strong>Contaminación</strong>
+          <span>Descarga residual</span>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" style="background:#1a9641;"></span>
+        <div class="legend-text">
+          <strong>Acreción</strong>
+          <span>Avance de la costa</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature info (dynamic) -->
+    <div class="info-panel" id="info-panel">
+      <div class="info-placeholder">
+        <i class="fa-solid fa-hand-pointer" style="font-size:1.5rem; color:#2a5298; display:block; margin-bottom:0.5rem;"></i>
+        Haz clic en cualquier zona del mapa para ver la información detallada del peligro costero.
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── MAP ── -->
+  <div id="map"></div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <span>
+    COSTAS_GITT · Extensión Académica de
+    <a href="https://github.com/kvos/CoastSat" target="_blank" rel="noopener noreferrer">CoastSat</a>
+    · Universidad del Atlántico · Puerto Colombia, Atlántico, Colombia
+  </span>
+  <span>
+    Imágenes satelitales: Landsat (USGS/NASA) &amp; Sentinel-2 (ESA/Copernicus) vía Google Earth Engine
+  </span>
+</footer>
+
+<!-- ── Leaflet JS ── -->
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WPgE="
+  crossorigin=""
+></script>
+
+<script>
+// ── Map initialization ──────────────────────────────────────────────────────
+const PUERTO_COLOMBIA = [10.9856, -74.9731];
+
+const map = L.map('map', {
+  center: PUERTO_COLOMBIA,
+  zoom: 15,
+  zoomControl: true,
+});
+
+// Base layers
+const baseLayers = {
+  'Satélite (Esri)': L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, GeoEye, Earthstar Geographics',
+      maxZoom: 19,
+    }
+  ),
+  'OpenStreetMap': L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }
+  ),
+  'CartoDB Oscuro': L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    {
+      attribution: '© <a href="https://carto.com/">CARTO</a>',
+      maxZoom: 19,
+    }
+  ),
+};
+
+baseLayers['Satélite (Esri)'].addTo(map);
+L.control.layers(baseLayers, {}, { position: 'topright', collapsed: true }).addTo(map);
+
+// Scale control
+L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map);
+
+// ── GeoJSON data ─────────────────────────────────────────────────────────────
+const geojsonData = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1, "layer": "erosionAlta",
+        "tipo": "Erosión Activa", "nivel": "Alto",
+        "descripcion": "Zona de retroceso costero documentado por imágenes satelitales. Pérdida estimada de 1–3 m/año en los últimos 10 años.",
+        "color": "#d73027",
+        "fuente": "Análisis CoastSat – Sentinel-2 / Landsat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9870, 10.9880], [-74.9820, 10.9880],
+          [-74.9820, 10.9865], [-74.9870, 10.9865], [-74.9870, 10.9880]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2, "layer": "erosionMedia",
+        "tipo": "Erosión Moderada", "nivel": "Medio",
+        "descripcion": "Zona con tendencia de retroceso costero moderado. Requiere monitoreo continuo y posibles medidas de protección.",
+        "color": "#fc8d59",
+        "fuente": "Análisis CoastSat – Sentinel-2 / Landsat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9820, 10.9880], [-74.9770, 10.9880],
+          [-74.9770, 10.9865], [-74.9820, 10.9865], [-74.9820, 10.9880]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3, "layer": "inundacionAlta",
+        "tipo": "Riesgo de Inundación por Marejadas", "nivel": "Alto",
+        "descripcion": "Área susceptible a inundaciones costeras durante eventos de marejada ciclónica y oleaje extremo. Afecta infraestructura y viviendas en primera línea de playa.",
+        "color": "#fee090",
+        "fuente": "Modelo de inundación costera – NOAA / IDEAM"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9900, 10.9895], [-74.9750, 10.9895],
+          [-74.9750, 10.9878], [-74.9900, 10.9878], [-74.9900, 10.9895]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4, "layer": "inundacionMedia",
+        "tipo": "Riesgo de Inundación por Marejadas", "nivel": "Medio",
+        "descripcion": "Zona con riesgo moderado de inundación en eventos extremos de marejada. Incluye sectores residenciales y comerciales del área costera.",
+        "color": "#ffffbf",
+        "fuente": "Modelo de inundación costera – NOAA / IDEAM"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9900, 10.9915], [-74.9750, 10.9915],
+          [-74.9750, 10.9895], [-74.9900, 10.9895], [-74.9900, 10.9915]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5, "layer": "infraestructura",
+        "tipo": "Infraestructura en Riesgo", "nivel": "Crítico",
+        "descripcion": "Muelle Histórico de Puerto Colombia (1888–1893). Patrimonio cultural en riesgo por efectos combinados de erosión, oleaje y deterioro estructural. Longitud original: 1.8 km.",
+        "color": "#7b2d8b",
+        "fuente": "ICANH / Inspección estructural"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.9843, 10.9876], [-74.9843, 10.9845],
+          [-74.9843, 10.9815], [-74.9843, 10.9785]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 6, "layer": "lineaCostera",
+        "tipo": "Zona de Monitoreo de Línea Costera", "nivel": "Monitoreo",
+        "descripcion": "Transectos de monitoreo satelital de la línea costera usando metodología CoastSat. Análisis de imágenes Landsat y Sentinel-2 desde 1984 hasta el presente para detectar cambios en la posición de la playa.",
+        "color": "#2171b5",
+        "fuente": "CoastSat – kvos/CoastSat (GitHub)"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.9950, 10.9875], [-74.9900, 10.9873],
+          [-74.9850, 10.9871], [-74.9800, 10.9870],
+          [-74.9750, 10.9869], [-74.9700, 10.9868]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 7, "layer": "contaminacion",
+        "tipo": "Contaminación Costera", "nivel": "Medio",
+        "descripcion": "Zona afectada por descarga de residuos sólidos y aguas residuales. Impacto en ecosistemas costeros y calidad del agua para actividades recreativas.",
+        "color": "#4d9221",
+        "fuente": "DADIS Barranquilla / Monitoreo ambiental"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9760, 10.9890], [-74.9720, 10.9890],
+          [-74.9720, 10.9870], [-74.9760, 10.9870], [-74.9760, 10.9890]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 8, "layer": "acrecion",
+        "tipo": "Acreción Costera", "nivel": "Informativo",
+        "descripcion": "Zona con tendencia de acumulación de sedimentos (avance de la línea costera). Puede indicar redistribución de sedimentos provenientes de zonas erosionadas más al oeste.",
+        "color": "#1a9641",
+        "fuente": "Análisis CoastSat – Sentinel-2 / Landsat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9700, 10.9880], [-74.9660, 10.9880],
+          [-74.9660, 10.9865], [-74.9700, 10.9865], [-74.9700, 10.9880]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 9, "layer": "infraestructura",
+        "tipo": "Punto de Interés", "nombre": "Muelle de Puerto Colombia",
+        "nivel": "Patrimonio",
+        "descripcion": "Muelle histórico construido entre 1888 y 1893. Fue el muelle de concreto más largo del mundo en su época (1.8 km). Actualmente en estado de deterioro, afectado por erosión y oleaje.",
+        "color": "#7b2d8b",
+        "fuente": "ICANH / Historia de Colombia"
+      },
+      "geometry": { "type": "Point", "coordinates": [-74.9843, 10.9876] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 10, "layer": "lineaCostera",
+        "tipo": "Punto de Interés", "nombre": "Playa Puerto Colombia",
+        "nivel": "Monitoreo",
+        "descripcion": "Playa principal de Puerto Colombia. Zona de alta actividad turística con procesos activos de erosión costera que amenazan la franja de arena.",
+        "color": "#2171b5",
+        "fuente": "CoastSat – Sentinel-2 / Landsat"
+      },
+      "geometry": { "type": "Point", "coordinates": [-74.9830, 10.9872] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 11, "layer": "contaminacion",
+        "tipo": "Punto de Interés", "nombre": "Desembocadura Arroyo Salado",
+        "nivel": "Medio",
+        "descripcion": "Desembocadura del Arroyo Salado al mar Caribe. Zona de dinámica sedimentaria compleja y riesgo de contaminación por escorrentía urbana durante lluvias intensas.",
+        "color": "#fc8d59",
+        "fuente": "DADIS Barranquilla / Monitoreo ambiental"
+      },
+      "geometry": { "type": "Point", "coordinates": [-74.9780, 10.9868] }
+    }
+  ]
+};
+
+// ── Layer groups ─────────────────────────────────────────────────────────────
+const layerGroups = {
+  erosionAlta:     L.layerGroup(),
+  erosionMedia:    L.layerGroup(),
+  inundacionAlta:  L.layerGroup(),
+  inundacionMedia: L.layerGroup(),
+  lineaCostera:    L.layerGroup(),
+  contaminacion:   L.layerGroup(),
+  acrecion:        L.layerGroup(),
+  infraestructura: L.layerGroup(),
+};
+
+Object.values(layerGroups).forEach(lg => lg.addTo(map));
+
+// ── Styling helpers ──────────────────────────────────────────────────────────
+function styleFeature(feature) {
+  const c = feature.properties.color;
+  return {
+    color: c,
+    fillColor: c,
+    weight: feature.geometry.type === 'LineString' ? 3 : 1.5,
+    opacity: 0.9,
+    fillOpacity: 0.35,
+    dashArray: feature.geometry.type === 'LineString' ? '6, 4' : null,
+  };
+}
+
+function nivelClass(nivel) {
+  const map = {
+    'Alto': 'nivel-alto',
+    'Crítico': 'nivel-critico',
+    'Medio': 'nivel-medio',
+    'Monitoreo': 'nivel-monitor',
+    'Informativo': 'nivel-info',
+    'Patrimonio': 'nivel-patrim',
+  };
+  return map[nivel] || 'nivel-info';
+}
+
+function buildPopup(props) {
+  const title = props.nombre || props.tipo;
+  return `
+    <div class="popup-title">${title}</div>
+    <span class="popup-nivel ${nivelClass(props.nivel)}">${props.nivel}</span>
+    <div class="popup-desc">${props.descripcion}</div>
+    ${props.fuente ? `<div class="popup-source">📡 ${props.fuente}</div>` : ''}
+  `;
+}
+
+function showSidebarInfo(props) {
+  const panel = document.getElementById('info-panel');
+  const title = props.nombre || props.tipo;
+  panel.innerHTML = `
+    <div class="feature-info">
+      <h4>${title}</h4>
+      <span class="nivel-badge ${nivelClass(props.nivel)}">${props.nivel}</span>
+      <p>${props.descripcion}</p>
+      ${props.fuente ? `<div class="source">📡 Fuente: ${props.fuente}</div>` : ''}
+    </div>
+  `;
+}
+
+// ── Render GeoJSON ───────────────────────────────────────────────────────────
+L.geoJSON(geojsonData, {
+  style: styleFeature,
+  pointToLayer: function (feature, latlng) {
+    return L.circleMarker(latlng, {
+      radius: 8,
+      fillColor: feature.properties.color,
+      color: '#fff',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.9,
+    });
+  },
+  onEachFeature: function (feature, layer) {
+    const props = feature.properties;
+    const groupName = props.layer;
+
+    layer.bindPopup(buildPopup(props), { maxWidth: 280 });
+
+    layer.on('click', function () {
+      showSidebarInfo(props);
+    });
+
+    layer.on('mouseover', function () {
+      if (feature.geometry.type !== 'Point') {
+        layer.setStyle({ fillOpacity: 0.6, weight: 2.5 });
+      }
+    });
+
+    layer.on('mouseout', function () {
+      if (feature.geometry.type !== 'Point') {
+        layer.setStyle(styleFeature(feature));
+      }
+    });
+
+    if (layerGroups[groupName]) {
+      layerGroups[groupName].addLayer(layer);
+    }
+  },
+});
+
+// ── Layer toggle function ────────────────────────────────────────────────────
+function toggleLayer(name) {
+  const checkbox = document.getElementById('chk-' + name);
+  if (!checkbox) return;
+  checkbox.checked = !checkbox.checked;
+  if (checkbox.checked) {
+    layerGroups[name].addTo(map);
+  } else {
+    map.removeLayer(layerGroups[name]);
+  }
+}
+
+// ── Center marker ────────────────────────────────────────────────────────────
+const centerIcon = L.divIcon({
+  className: '',
+  html: '<div style="background:#4fc3f7;width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px #4fc3f7;"></div>',
+  iconSize: [12, 12],
+  iconAnchor: [6, 6],
+});
+
+L.marker(PUERTO_COLOMBIA, { icon: centerIcon })
+  .addTo(map)
+  .bindTooltip('Puerto Colombia, Atlántico', {
+    permanent: true,
+    direction: 'top',
+    className: '',
+    offset: [0, -8],
+  });
+</script>
+</body>
+</html>

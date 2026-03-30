@@ -1,0 +1,222 @@
+{
+  "type": "FeatureCollection",
+  "name": "Peligros Costeros - Puerto Colombia",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "tipo": "Erosión Activa",
+        "nivel": "Alto",
+        "descripcion": "Zona de retroceso costero documentado por imágenes satelitales. Pérdida estimada de 1–3 m/año en los últimos 10 años.",
+        "color": "#d73027",
+        "fuente": "Análisis CoastSat - Sentinel-2 / Landsat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9870, 10.9880],
+          [-74.9820, 10.9880],
+          [-74.9820, 10.9865],
+          [-74.9870, 10.9865],
+          [-74.9870, 10.9880]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "tipo": "Erosión Moderada",
+        "nivel": "Medio",
+        "descripcion": "Zona con tendencia de retroceso costero moderado. Requiere monitoreo continuo y posibles medidas de protección.",
+        "color": "#fc8d59",
+        "fuente": "Análisis CoastSat - Sentinel-2 / Landsat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9820, 10.9880],
+          [-74.9770, 10.9880],
+          [-74.9770, 10.9865],
+          [-74.9820, 10.9865],
+          [-74.9820, 10.9880]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "tipo": "Riesgo de Inundación por Marejadas",
+        "nivel": "Alto",
+        "descripcion": "Área susceptible a inundaciones costeras durante eventos de marejada ciclónica y oleaje extremo. Afecta infraestructura y viviendas en primera línea de playa.",
+        "color": "#fee090",
+        "fuente": "Modelo de inundación costera - NOAA / IDEAM"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9900, 10.9895],
+          [-74.9750, 10.9895],
+          [-74.9750, 10.9878],
+          [-74.9900, 10.9878],
+          [-74.9900, 10.9895]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "tipo": "Riesgo de Inundación por Marejadas",
+        "nivel": "Medio",
+        "descripcion": "Zona con riesgo moderado de inundación en eventos extremos de marejada. Incluye sectores residenciales y comerciales del área costera.",
+        "color": "#ffffbf",
+        "fuente": "Modelo de inundación costera - NOAA / IDEAM"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9900, 10.9915],
+          [-74.9750, 10.9915],
+          [-74.9750, 10.9895],
+          [-74.9900, 10.9895],
+          [-74.9900, 10.9915]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "tipo": "Infraestructura en Riesgo",
+        "nivel": "Crítico",
+        "descripcion": "Muelle Histórico de Puerto Colombia (1888–1893). Patrimonio cultural en riesgo por efectos combinados de erosión, oleaje y deterioro estructural. Longitud original: 1.8 km.",
+        "color": "#7b2d8b",
+        "fuente": "ICANH / Inspección estructural"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.9843, 10.9876],
+          [-74.9843, 10.9835],
+          [-74.9843, 10.9790]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 6,
+        "tipo": "Zona de Monitoreo de Línea Costera",
+        "nivel": "Monitoreo",
+        "descripcion": "Transectos de monitoreo satelital de la línea costera usando metodología CoastSat. Análisis de imágenes Landsat y Sentinel-2 desde 1984 hasta el presente.",
+        "color": "#2171b5",
+        "fuente": "CoastSat - kvos/CoastSat"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.9950, 10.9875],
+          [-74.9900, 10.9873],
+          [-74.9850, 10.9871],
+          [-74.9800, 10.9870],
+          [-74.9750, 10.9869],
+          [-74.9700, 10.9868]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 7,
+        "tipo": "Contaminación Costera",
+        "nivel": "Medio",
+        "descripcion": "Zona afectada por descarga de residuos sólidos y aguas residuales. Impacto en ecosistemas costeros y calidad del agua para actividades recreativas.",
+        "color": "#4d9221",
+        "fuente": "DADIS Barranquilla / Monitoreo ambiental"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9760, 10.9890],
+          [-74.9720, 10.9890],
+          [-74.9720, 10.9870],
+          [-74.9760, 10.9870],
+          [-74.9760, 10.9890]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 8,
+        "tipo": "Acreción Costera",
+        "nivel": "Informativo",
+        "descripcion": "Zona con tendencia de acumulación de sedimentos (avance de la línea costera). Puede indicar redistribución de sedimentos desde zonas erosionadas.",
+        "color": "#1a9641",
+        "fuente": "Análisis CoastSat - Sentinel-2 / Landsat"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74.9700, 10.9880],
+          [-74.9660, 10.9880],
+          [-74.9660, 10.9865],
+          [-74.9700, 10.9865],
+          [-74.9700, 10.9880]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 9,
+        "tipo": "Punto de Interés",
+        "nombre": "Muelle de Puerto Colombia",
+        "nivel": "Patrimonio",
+        "descripcion": "Muelle histórico construido entre 1888 y 1893. Fue el muelle de concreto más largo del mundo en su época. Actualmente en estado de deterioro, afectado por erosión y oleaje.",
+        "color": "#7b2d8b"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-74.9843, 10.9876]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 10,
+        "tipo": "Punto de Interés",
+        "nombre": "Playa Puerto Colombia",
+        "nivel": "Monitoreo",
+        "descripcion": "Playa principal de Puerto Colombia. Zona de alta actividad turística con procesos activos de erosión costera que amenazan la franja de arena.",
+        "color": "#2171b5"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-74.9830, 10.9872]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 11,
+        "tipo": "Punto de Interés",
+        "nombre": "Desembocadura Arroyo Salado",
+        "nivel": "Medio",
+        "descripcion": "Desembocadura del Arroyo Salado al mar Caribe. Zona de dinámica sedimentaria compleja y riesgo de contaminación por escorrentía urbana durante lluvias intensas.",
+        "color": "#fc8d59"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-74.9780, 10.9868]
+      }
+    }
+  ]
+}
